@@ -1,0 +1,1419 @@
+<!-- Replace YOUR-DOMAIN.com before launch -->
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>How to Create and Set Up a USB Security Key on Windows and Mac</title>
+<meta content="Learn how to create a USB security key to protect your sensitive data. Comprehensive guide on turning any USB drive into a secure, encrypted hardware token." name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,600;0,700;1,600&amp;family=Merriweather+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+:root {
+    --color-bg: #FAF7F2;
+    --color-hero-bg: #F0EBE0;
+    --color-primary-accent: #8B5E3C;
+    --color-primary-accent-soft: rgba(139, 94, 60, 0.13);
+    --color-secondary-accent: #4A7C59;
+    --color-secondary-soft: rgba(74, 124, 89, 0.12);
+    --color-card: #FFFFFF;
+    --color-border: #E0D8CC;
+    --color-body-text: #2E2416;
+    --color-heading-text: #251B10;
+    --color-meta-text: #6E6255;
+    --color-sand: #F6EFE4;
+    --color-shadow: rgba(46, 36, 22, 0.08);
+
+    --font-heading: 'Lora', Georgia, serif;
+    --font-body: 'Merriweather Sans', Arial, sans-serif;
+
+    --max-reading-width: 740px;
+    --max-wide-width: 1180px;
+    --section-padding-v: 76px;
+    --radius-card: 18px;
+    --transition-speed: 0.25s;
+}
+
+/* RESET & BASE */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--font-body);
+    background:
+        radial-gradient(circle at 0 0, rgba(139, 94, 60, 0.08), transparent 32rem),
+        linear-gradient(180deg, var(--color-bg), #fffdf8 42%, var(--color-bg));
+    color: var(--color-body-text);
+    line-height: 1.9;
+    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(46,36,22,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(46,36,22,0.015) 1px, transparent 1px);
+    background-size: 44px 44px;
+    z-index: -1;
+}
+h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading);
+    color: var(--color-heading-text);
+    line-height: 1.12;
+    margin-bottom: 1rem;
+    letter-spacing: -0.025em;
+}
+h1 {
+    font-size: clamp(36px, 6vw, 58px);
+    font-weight: 700;
+    text-align: left;
+    text-transform: none;
+}
+h2 {
+    font-size: clamp(30px, 4.3vw, 46px);
+    font-weight: 600;
+    font-style: italic;
+    color: var(--color-primary-accent);
+    margin-top: 2rem;
+}
+h3 { font-size: 1.52rem; font-weight: 700; margin-top: 1.5rem; }
+h4 { font-size: 1.05rem; font-weight: 700; }
+p { margin-bottom: 1.25rem; max-width: var(--max-reading-width); }
+a {
+    color: var(--color-primary-accent);
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.24em;
+    transition: color var(--transition-speed), opacity var(--transition-speed), border-color var(--transition-speed), background var(--transition-speed), transform var(--transition-speed);
+}
+a:hover { color: var(--color-secondary-accent); }
+ul, ol { margin-bottom: 1.25rem; padding-left: 1.35rem; }
+li { margin-bottom: 0.55rem; }
+
+.container-reading { max-width: var(--max-reading-width); margin: 0 auto; padding: 0 24px; }
+.container-wide { max-width: var(--max-wide-width); margin: 0 auto; padding: 0 24px; }
+.section-pad { padding: var(--section-padding-v) 0; }
+.bg-tint { background: linear-gradient(180deg, rgba(240, 235, 224, 0.68), rgba(250, 247, 242, 0.72)); border-block: 1px solid rgba(224, 216, 204, 0.55); }
+
+/* READING PROGRESS */
+.reading-progress {
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: 0%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary-accent), #B9825A);
+    z-index: 9999;
+    box-shadow: 0 1px 0 rgba(255,255,255,.45);
+}
+
+/* HEADER */
+header {
+    position: sticky;
+    top: 0;
+    background: rgba(250, 247, 242, 0.88);
+    border-bottom: 1px solid var(--color-border);
+    z-index: 1000;
+    backdrop-filter: blur(16px);
+    transition: box-shadow var(--transition-speed), background var(--transition-speed);
+}
+header.scrolled { box-shadow: 0 12px 30px rgba(46, 36, 22, 0.08); background: rgba(250, 247, 242, 0.95); }
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 72px;
+    max-width: var(--max-wide-width);
+    margin: 0 auto;
+    padding: 0 24px;
+    gap: 24px;
+}
+.site-brand,
+.footer-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-heading-text);
+    text-transform: none;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-decoration: none;
+    word-spacing: normal;
+}
+.brand-mark {
+    position: relative;
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(139, 94, 60, 0.35);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fff8ec 0%, #f0d8c0 100%);
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,.55), 0 8px 18px rgba(139,94,60,.12);
+}
+.brand-mark::before {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 7px;
+    width: 18px;
+    height: 22px;
+    background: linear-gradient(180deg, #8B5E3C, #6B4428);
+    clip-path: polygon(50% 0, 88% 10%, 88% 50%, 50% 100%, 12% 50%, 12% 10%);
+    opacity: .92;
+}
+.brand-mark::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 15px;
+    width: 7px;
+    height: 8px;
+    border: 2px solid #FAF7F2;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: none;
+}
+.nav-links { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.nav-links a {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-meta-text);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+}
+.nav-links a:hover { color: var(--color-primary-accent); }
+.nav-cta {
+    padding: 10px 16px;
+    border: 1px solid var(--color-primary-accent);
+    border-radius: 999px;
+    color: var(--color-primary-accent) !important;
+    background: rgba(255,255,255,.5);
+}
+.nav-cta:hover { background: var(--color-primary-accent); color: #fff !important; }
+.mobile-toggle { display: none; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-heading-text); }
+
+/* STICKY TOC */
+.toc-sidebar {
+    position: fixed;
+    top: 104px;
+    left: max(24px, calc((100vw - var(--max-wide-width)) / 2 - 210px));
+    width: 190px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 18px;
+    z-index: 80;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+    backdrop-filter: blur(14px);
+}
+.toc-sidebar a {
+    display: block;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--color-meta-text);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    padding: 7px 0 7px 10px;
+}
+.toc-sidebar a.active {
+    color: var(--color-primary-accent);
+    border-left-color: var(--color-primary-accent);
+    font-weight: 700;
+}
+.mobile-current-section {
+    display: none;
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    z-index: 1001;
+    padding: 11px 14px;
+    border: 1px solid rgba(139, 94, 60, 0.26);
+    border-radius: 999px;
+    background: rgba(255, 252, 246, 0.94);
+    color: var(--color-primary-accent);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    box-shadow: 0 16px 36px rgba(46,36,22,.13);
+    backdrop-filter: blur(14px);
+}
+
+/* HERO */
+.hero {
+    background:
+        radial-gradient(circle at 75% 18%, rgba(139,94,60,0.13), transparent 22rem),
+        linear-gradient(135deg, var(--color-hero-bg), #F7F2E8);
+    padding: 88px 0 68px;
+    border-bottom: 1px solid var(--color-border);
+}
+.hero-layout {
+    max-width: var(--max-wide-width);
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 72px;
+    align-items: center;
+}
+.hero-copy { max-width: var(--max-reading-width); }
+.breadcrumb {
+    font-size: 12px;
+    color: var(--color-meta-text);
+    margin-bottom: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+}
+.hero p[style] { color: var(--color-meta-text) !important; }
+.meta-bar {
+    display: flex;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--color-meta-text);
+    margin: 18px 0 0;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    line-height: 1.65;
+}
+.meta-avatar {
+    width: 34px;
+    height: 34px;
+    background: var(--color-primary-accent-soft);
+    border: 1px solid rgba(139,94,60,.22);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--color-primary-accent);
+}
+.quick-answer {
+    background: rgba(255, 252, 246, 0.88);
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-primary-accent);
+    padding: 26px 28px;
+    border-radius: 0 18px 18px 0;
+    margin: 30px 0 18px;
+    box-shadow: 0 14px 32px rgba(46, 36, 22, 0.06);
+}
+.qa-label,
+.interactive-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--color-primary-accent);
+    margin-bottom: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+.hero-visual {
+    min-height: 360px;
+    position: relative;
+    border-radius: 28px;
+    background:
+        linear-gradient(135deg, rgba(255,255,255,.62), rgba(246,239,228,.62)),
+        repeating-linear-gradient(90deg, transparent 0 28px, rgba(139,94,60,.04) 28px 29px);
+    border: 1px solid rgba(224,216,204,.95);
+    box-shadow: 0 32px 70px rgba(46,36,22,.11);
+    overflow: hidden;
+}
+.hero-folder {
+    position: absolute;
+    width: 232px;
+    height: 150px;
+    left: 62px;
+    top: 105px;
+    border-radius: 18px 18px 20px 20px;
+    background: linear-gradient(135deg, #C28A5D, #8B5E3C);
+    box-shadow: 0 32px 52px rgba(139, 94, 60, 0.24);
+}
+.hero-folder::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: -26px;
+    width: 96px;
+    height: 42px;
+    border-radius: 14px 14px 0 0;
+    background: linear-gradient(135deg, #B77D50, #8B5E3C);
+}
+.hero-doc {
+    position: absolute;
+    width: 150px;
+    height: 190px;
+    right: 58px;
+    top: 76px;
+    border-radius: 12px;
+    background: #fffaf1;
+    border: 1px solid rgba(139,94,60,.22);
+    box-shadow: 0 18px 40px rgba(46,36,22,.10);
+}
+.hero-doc::before,
+.hero-doc::after {
+    content: "";
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    height: 8px;
+    border-radius: 99px;
+    background: rgba(139,94,60,.18);
+}
+.hero-doc::before { top: 46px; box-shadow: 0 30px 0 rgba(139,94,60,.18), 0 60px 0 rgba(74,124,89,.18); }
+.hero-doc::after { top: 136px; width: 56px; right: auto; background: var(--color-secondary-accent); opacity: .8; }
+.hero-lock {
+    position: absolute;
+    left: 148px;
+    top: 190px;
+    width: 76px;
+    height: 62px;
+    border-radius: 16px;
+    background: var(--color-secondary-accent);
+    box-shadow: 0 18px 32px rgba(74,124,89,.22);
+}
+.hero-lock::before {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: -32px;
+    width: 40px;
+    height: 42px;
+    border: 8px solid var(--color-secondary-accent);
+    border-bottom: none;
+    border-radius: 22px 22px 0 0;
+}
+.hero-lock::after {
+    content: "";
+    position: absolute;
+    left: 35px;
+    top: 22px;
+    width: 7px;
+    height: 18px;
+    border-radius: 8px;
+    background: #fffaf1;
+}
+
+/* MAIN TOC */
+.toc-card {
+    background: rgba(255, 252, 246, 0.92);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    padding: 32px;
+    margin: 0 auto;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+}
+.toc-card h3 { margin-top: 0; margin-bottom: 18px; font-size: 22px; text-transform: none; }
+.toc-list { list-style: none; padding: 0; counter-reset: toc; }
+.toc-list li { margin-bottom: 12px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; counter-increment: toc; }
+.toc-list li:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.toc-list a {
+    color: var(--color-heading-text);
+    font-weight: 500;
+    display: flex;
+    gap: 14px;
+    justify-content: flex-start;
+    text-decoration: none;
+}
+.toc-list a::before {
+    content: counter(toc, decimal-leading-zero);
+    color: var(--color-primary-accent);
+    font-weight: 700;
+    min-width: 2.4em;
+}
+.toc-list a:hover { color: var(--color-primary-accent); }
+
+/* IMAGES */
+.content-image-card,
+.inline-asset {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 10px;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+    overflow: hidden;
+}
+.content-image-card img,
+.inline-asset img,
+.use-case-card img,
+.method-image img,
+.resource-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+}
+.image-wide { margin: 28px 0; }
+.image-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px; margin: 26px 0; }
+.resource-image { margin-top: 18px; }
+
+/* OVERVIEW */
+.diagonal-split {
+    position: relative;
+    background: #fffdf8;
+    padding: 84px 0;
+    overflow: hidden;
+    border-bottom: 1px solid var(--color-border);
+}
+.diagonal-split::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 52%;
+    background: linear-gradient(135deg, rgba(240,235,224,.76), rgba(250,247,242,.3));
+    clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%);
+    z-index: 0;
+}
+.diagonal-inner { display: grid; grid-template-columns: minmax(0, .98fr) minmax(320px, .82fr); gap: 64px; position: relative; z-index: 1; align-items: center; }
+
+/* METHOD CARDS */
+.tab-group,
+.method-card-list {
+    margin: 40px 0 0;
+    display: grid;
+    gap: 22px;
+}
+.tab-headers { display: none; }
+.tab-content,
+.method-card {
+    display: block !important;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+    overflow: hidden;
+    cursor: pointer;
+}
+.method-card-head {
+    padding: 28px 30px 20px;
+    border-top: 5px solid var(--color-primary-accent);
+    background: linear-gradient(180deg, #fff, #fffcf6);
+}
+.method-label-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-bottom: 14px;
+    border-radius: 999px;
+    background: var(--color-primary-accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+.method-card h3 { margin-top: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.method-card p { padding: 0 30px; }
+.method-card .method-image { margin: 4px 30px 22px; }
+.method-steps {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .45s ease;
+    padding: 0 30px;
+}
+.method-card.expanded .method-steps { max-height: 760px; padding-bottom: 28px; }
+.diff-viz { display: inline-flex; gap: 5px; align-items: center; vertical-align: middle; }
+.diff-bar {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid rgba(139,94,60,.35);
+}
+.diff-bar.filled { background: var(--color-primary-accent); border-color: var(--color-primary-accent); }
+.diff-label {
+    font-size: 11px;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--color-secondary-accent);
+    margin-left: 4px;
+    letter-spacing: .08em;
+    background: var(--color-secondary-soft);
+    border-radius: 999px;
+    padding: 4px 8px;
+}
+
+/* USE CASES */
+.use-case-scroll {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: 20px;
+    overflow: visible;
+    padding-bottom: 0;
+    margin-top: 32px;
+}
+.use-case-card {
+    min-width: 0;
+    background: white;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 14px 14px 24px;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+    transition: transform var(--transition-speed), border-color var(--transition-speed);
+}
+.use-case-card:hover { transform: translateY(-5px); border-color: rgba(139,94,60,.5); }
+.use-case-card img { margin-bottom: 16px; aspect-ratio: auto; }
+.use-case-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--color-secondary-soft);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px 0 14px;
+    color: var(--color-secondary-accent);
+    font-size: 22px;
+}
+.use-case-card h4 { margin: 0 0 8px; font-size: 18px; }
+.use-case-card p { font-size: 14px; color: var(--color-meta-text); margin: 0; line-height: 1.65; }
+
+/* COMPARISON */
+.comp-table-wrap {
+    overflow-x: auto;
+    margin: 36px 0 0;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+}
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 17px 22px; border-bottom: 1px solid var(--color-border); }
+th {
+    background: #fffaf1;
+    font-family: var(--font-body);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    white-space: nowrap;
+    color: var(--color-primary-accent);
+}
+td { font-size: 15px; }
+tbody tr { transition: background .2s ease; }
+tbody tr:hover { background: #FAF7F2; }
+tbody tr:last-child td { border-bottom: none; color: #fff; background: var(--color-primary-accent); }
+tbody tr:last-child .col-highlight { background: #71492E; }
+.dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--color-border); margin-right: 8px; vertical-align: middle; }
+.dot.fill-full { background: var(--color-primary-accent); }
+.dot.fill-half { background: linear-gradient(90deg, var(--color-primary-accent) 50%, var(--color-border) 50%); }
+.col-highlight { background: rgba(74,124,89,.09); font-weight: 700; }
+
+/* RECOMMENDATION BAND */
+.saas-band {
+    background:
+        radial-gradient(circle at 84% 18%, rgba(250,247,242,.15), transparent 22rem),
+        linear-gradient(135deg, #2E2416, #4A311D);
+    color: #fffaf1;
+    padding: 100px 0;
+    position: relative;
+    overflow: hidden;
+}
+.saas-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(320px, .88fr); gap: 64px; align-items: center; }
+.saas-content h2 { color: #fffaf1; margin-top: 0; }
+.saas-content p { color: #EFE2D0; font-size: 18px; margin-bottom: 28px; }
+.mockup-frame {
+    background: rgba(250,247,242,0.08);
+    border: 1px solid rgba(250,247,242,0.18);
+    border-radius: 26px;
+    padding: 14px;
+    box-shadow: 0 28px 54px rgba(0,0,0,0.25);
+}
+.mockup-inner {
+    background: #fffaf1;
+    border-radius: 18px;
+    min-height: 285px;
+    display: grid;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    color: rgba(46,36,22,0.5);
+    font-family: var(--font-body);
+    letter-spacing: 0.08em;
+    padding: 18px;
+    text-align: center;
+}
+.mockup-inner .inline-asset { box-shadow: none; border-color: rgba(224,216,204,.7); padding: 8px; }
+.btn-primary,
+.btn-outline,
+.btn-editorial {
+    display: inline-block;
+    font-weight: 700;
+    padding: 13px 24px;
+    border-radius: 999px;
+    text-align: center;
+    text-decoration: none;
+}
+.btn-primary {
+    background: var(--color-primary-accent);
+    color: white;
+    border: 1px solid var(--color-primary-accent);
+}
+.btn-primary:hover { transform: translateY(-2px); color: white; background: #744B2D; }
+.btn-outline { background: transparent; color: #fffaf1; border: 1px solid rgba(255,255,255,0.42); }
+.btn-outline:hover { border-color: #fffaf1; color: #fffaf1; transform: translateY(-2px); }
+.btn-editorial {
+    border: 1px solid var(--color-primary-accent);
+    background: white;
+    color: var(--color-primary-accent);
+    font-size: 15px;
+}
+.btn-editorial:hover { background: var(--color-primary-accent); color: white; }
+.saas-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+
+/* INTERACTIVE */
+.interactive-box {
+    background: rgba(255, 252, 246, 0.92);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 32px 0;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+}
+.quiz-option {
+    display: block;
+    padding: 15px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+    background: #fff;
+}
+.quiz-option:hover { border-color: var(--color-primary-accent); background: #FAF7F2; }
+input[type="radio"],
+input[type="checkbox"] { accent-color: var(--color-primary-accent); }
+input[type="radio"] { margin-right: 12px; }
+#quiz-result {
+    display: none;
+    margin-top: 24px;
+    padding: 20px;
+    background: #fffaf1;
+    border-left: 4px solid var(--color-primary-accent);
+    border-radius: 0 14px 14px 0;
+}
+.check-item { display: flex; align-items: flex-start; margin-bottom: 16px; }
+.check-item input[type="checkbox"] { margin-top: 7px; margin-right: 12px; width: 18px; height: 18px; }
+.check-item.checked span { text-decoration: line-through; color: var(--color-meta-text); }
+
+/* TOGGLES */
+.signature-toggle-wrap { display: flex; justify-content: center; margin-bottom: 32px; }
+.sig-toggle {
+    display: inline-flex;
+    background: #fffaf1;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 5px;
+    position: relative;
+}
+.sig-btn {
+    border: none;
+    background: transparent;
+    padding: 10px 22px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--color-meta-text);
+    z-index: 1;
+    transition: color var(--transition-speed);
+    border-radius: 999px;
+    letter-spacing: .06em;
+}
+.sig-btn.active { color: white; }
+.sig-slider {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    width: calc(50% - 5px);
+    background: var(--color-primary-accent);
+    border-radius: 999px;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 0;
+}
+.sig-view { display: none; }
+.sig-view.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* PULL QUOTES & CALLOUTS */
+.pull-quote {
+    position: relative;
+    border-left: 0;
+    padding: 44px 42px;
+    background: transparent;
+    margin: 40px 0;
+    font-family: var(--font-heading);
+    font-size: 28px;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.55;
+    color: var(--color-primary-accent);
+    border-radius: 0;
+}
+.pull-quote::before {
+    content: "“";
+    position: absolute;
+    left: -6px;
+    top: -34px;
+    font-size: 168px;
+    line-height: 1;
+    color: var(--color-primary-accent);
+    opacity: .15;
+    font-family: Georgia, serif;
+}
+.pull-quote strong {
+    display: block;
+    margin-top: 18px;
+    font-style: normal;
+    font-size: 13px;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-secondary-accent);
+}
+.expert-callout,
+.faq-a {
+    border-left: 4px solid var(--color-secondary-accent);
+    background: var(--color-secondary-soft);
+}
+
+/* PRICING */
+.pricing-prose {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) minmax(240px,.55fr);
+    gap: 28px;
+    align-items: start;
+    background: white;
+    padding: 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    box-shadow: 0 18px 42px rgba(46,36,22,.07);
+}
+.pricing-prose h4 { margin-top: 0; font-size: 22px; }
+.pricing-price {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--color-primary-accent);
+    display: block;
+    margin-bottom: 16px;
+}
+
+/* FAQ */
+.faq-chat { margin-bottom: 22px; }
+.faq-q {
+    background: #fffaf1;
+    border: 1px solid var(--color-border);
+    padding: 16px 22px;
+    border-radius: 18px 18px 18px 5px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    max-width: 88%;
+}
+.faq-a {
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-secondary-accent);
+    padding: 20px 24px;
+    border-radius: 18px 18px 5px 18px;
+    margin-left: auto;
+    max-width: 90%;
+    box-shadow: 0 9px 22px rgba(46,36,22,.04);
+}
+
+/* FOOTER */
+footer {
+    background: #251B10;
+    color: #CBBBAB;
+    padding: 66px 0 40px;
+    font-size: 14px;
+}
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 48px; }
+.footer-col h4 { color: #fffaf1; font-family: var(--font-heading); text-transform: none; letter-spacing: 0; margin-bottom: 20px; font-size: 18px; }
+.footer-col ul { list-style: none; padding: 0; margin: 0; }
+.footer-col li { margin-bottom: 12px; }
+.footer-col a { color: #CBBBAB; }
+.footer-col a:hover { color: #fffaf1; }
+.footer-brand { color: #fffaf1; margin-bottom: 18px; }
+.footer-brand .brand-mark { transform: scale(.92); transform-origin: left center; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+.editorial-disclosure { font-style: italic; max-width: 600px; line-height: 1.7; }
+
+/* RESPONSIVE */
+@media (max-width: 1220px) {
+    .toc-sidebar { display: none; }
+}
+@media (max-width: 992px) {
+    .hero-layout { grid-template-columns: 1fr; gap: 36px; }
+    .hero-visual { min-height: 300px; }
+    .diagonal-split::before { left: 0; top: 44%; clip-path: polygon(0 12%, 100% 0, 100% 100%, 0 100%); }
+    .diagonal-inner { grid-template-columns: 1fr; gap: 32px; }
+    .saas-grid { grid-template-columns: 1fr; }
+    .use-case-scroll { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pricing-prose { grid-template-columns: 1fr; }
+    .image-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    :root { --section-padding-v: 52px; }
+    body { font-size: 16px; padding-bottom: 52px; }
+    h1 { font-size: clamp(36px, 10vw, 44px); }
+    .header-inner { min-height: 66px; }
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 66px;
+        left: 0;
+        right: 0;
+        background: #fffaf1;
+        flex-direction: column;
+        padding: 24px;
+        box-shadow: 0 14px 26px rgba(46,36,22,.12);
+        gap: 16px;
+        border-bottom: 1px solid var(--color-border);
+        align-items: flex-start;
+    }
+    .nav-links.active { display: flex; }
+    .mobile-toggle { display: block; }
+    .nav-cta { align-self: flex-start; }
+    .hero { padding: 62px 0 44px; }
+    .hero-layout { padding: 0 20px; }
+    .hero-visual { display: none; }
+    .quick-answer { padding: 22px; }
+    .meta-bar { align-items: flex-start; }
+    .mobile-current-section { display: block; }
+    .use-case-scroll { grid-template-columns: 1fr; }
+    .method-card h3 { font-size: 1.34rem; }
+    .pull-quote { font-size: 20px; padding: 34px 24px; }
+    .pull-quote::before { font-size: 112px; top: -20px; }
+    .expert-callout,
+    .faq-a { max-width: 100%; width: 100%; }
+    .faq-q { max-width: 100%; }
+    .site-brand { font-size: 18px; }
+    .brand-mark { width: 34px; height: 34px; flex-basis: 34px; }
+}
+
+</style>
+</head>
+<body><div class="reading-progress" id="reading-progress"></div>
+<header id="site-header">
+<div class="header-inner">
+<a class="site-brand" href="/"><span aria-hidden="true" class="brand-mark"></span><span>SecureDrive Hub</span></a>
+<button aria-label="Toggle Menu" class="mobile-toggle" id="mobile-toggle">☰</button>
+<nav class="nav-links" id="nav-links">
+<a href="#overview">Overview</a>
+<a href="#methods">Methods</a>
+<a href="#recommendation">Top Pick</a>
+<a href="#comparison">Compare</a>
+<a href="#faq">FAQ</a>
+<a class="nav-cta" href="#recommendation">See Our Top Pick →</a>
+</nav>
+</div>
+</header><div class="mobile-current-section" id="mobile-current-section">Overview</div><aside aria-label="Table of Contents" class="toc-sidebar"><a href="#overview">1. What is a USB Security Key?</a><a href="#use-cases">2. Common Use Cases &amp; Scenarios</a><a href="#methods">3. Complete Methods Guide (Native vs Software)</a><a href="#recommendation">4. Our Top Recommendation: USB Secure</a><a href="#comparison">5. Head-to-Head Comparison</a><a href="#tutorial">6. Step-by-Step Tutorial</a><a href="#deep-dive">7. Technical Deep Dive (BadUSB, FIDO2)</a><a href="#troubleshooting">8. Troubleshooting &amp; FAQ</a></aside>
+<section class="hero">
+
+<div class="hero-layout"><div class="hero-copy">
+<div class="breadcrumb">Guides • Hardware Security</div>
+<h1>How to Create and Set Up a USB Security Key on Windows and Mac</h1>
+<p style="font-size: 20px; color: var(--color-meta-text); margin-top: 16px;">
+                Learn how to transform a standard USB flash drive into an encrypted hardware token to protect your sensitive data from unauthorized access, loss, or endpoint network snooping.
+            </p>
+
+<div class="quick-answer">
+<span class="qa-label">Quick Answer</span>
+<p>To create a USB security key, you can use native OS tools like <strong><a href="https://windowsreport.com/encrypt-usb-flash-drive-windows/" rel="noopener noreferrer" target="_blank">BitLocker To Go (Windows)</a></strong> or <strong>Disk Utility (Mac)</strong> for basic drive-level encryption. However, for cross-platform compatibility, zero-admin-rights access, and virtual secure environments, a dedicated software method like <strong><a href="https://www.softlay.com/downloads/usb-secure" rel="noopener noreferrer" target="_blank">USB Secure</a></strong> or <strong>Folder Lock</strong> is recommended. These tools install an independent security layer directly onto the drive, turning any standard pendrive into a portable, password-protected hardware vault.</p>
+</div><div class="meta-bar">
+<div class="meta-avatar">SD</div>
+<div>
+<strong>SecureDrive Editorial Team</strong><br/>
+                    Updated: August 2025 • 12 min read
+                </div>
+</div>
+</div><div aria-hidden="true" class="hero-visual"><div class="hero-folder"></div><div class="hero-doc"></div><div class="hero-lock"></div></div></div></section>
+<section class="section-pad">
+<div class="container-reading">
+<div class="toc-card">
+<h3>Table of Contents</h3>
+<ul class="toc-list">
+<li><a href="#overview">1. What is a USB Security Key?</a></li>
+<li><a href="#use-cases">2. Common Use Cases &amp; Scenarios</a></li>
+<li><a href="#methods">3. Complete Methods Guide (Native vs Software)</a></li>
+<li><a href="#recommendation">4. Our Top Recommendation: USB Secure</a></li>
+<li><a href="#comparison">5. Head-to-Head Comparison</a></li>
+<li><a href="#tutorial">6. Step-by-Step Tutorial</a></li>
+<li><a href="#deep-dive">7. Technical Deep Dive (BadUSB, FIDO2)</a></li>
+<li><a href="#troubleshooting">8. Troubleshooting &amp; FAQ</a></li>
+</ul>
+</div>
+</div>
+</section>
+<section class="diagonal-split" id="overview">
+<div class="container-wide diagonal-inner">
+<div>
+<h2>Why Turn a USB into a Security Key?</h2>
+<p>Standard USB drives are notorious security liabilities. Because they are designed for universal plug-and-play convenience, any drive containing financial records, client lists, or personal archives is entirely exposed if lost or stolen. </p>
+<p>Creating a <strong>USB security key</strong> essentially means establishing a cryptographic barrier on the physical media. When you make a USB security key, you ensure that the data remains unreadable without successful authentication (usually a master password). </p>
+<p>While some users look to purchase expensive, hardware-encrypted flash drives (which have built-in keypads or fingerprint scanners), you can achieve robust data-leak prevention by transforming the standard flash drives you already own using either built-in OS tools or specialized portable security software.</p>
+<figure class="content-image-card image-wide"><img alt="USB security key concept showing a protected portable drive" decoding="async" loading="lazy" src="https://i.ibb.co/LdhVNTRm/what-is-a-usb-security-key.jpg"/></figure></div>
+<div>
+<div class="interactive-box" style="margin:0;">
+<span class="interactive-label">Security Risk Assessment</span>
+<h3 style="margin-top:0;">Is your current USB safe?</h3>
+<p style="font-size:15px;">Answer one question to assess your risk:</p>
+<label class="quiz-option">
+<input name="risk" type="radio" value="high"/> I store client data, passwords, or tax docs on standard USBs.
+                    </label>
+<label class="quiz-option">
+<input name="risk" type="radio" value="med"/> I use USBs for moving work files between home and the office.
+                    </label>
+<label class="quiz-option">
+<input name="risk" type="radio" value="low"/> I only use USBs as boot drives or for public media files.
+                    </label>
+<div id="quiz-result"></div>
+</div>
+</div>
+</div>
+</section>
+<section class="section-pad" id="use-cases">
+<div class="container-wide">
+<h2>Who Needs a USB Security Key?</h2>
+<p class="container-reading" style="margin-left:0; padding-left:0;">Transforming a USB into a secure token solves distinct problems depending on your environment. Here are the primary scenarios where an encrypted drive is critical.</p>
+<div class="use-case-scroll">
+<div class="use-case-card"><img alt="Secure file transfer workflow for remote professionals" decoding="async" loading="lazy" src="https://i.ibb.co/4RQm9JNL/secure-transfer-without-password-sharing.jpg"/>
+<div class="use-case-icon">💼</div>
+<h4>The Remote Professional</h4>
+<p>Moving proprietary company data, financial models, or sensitive client files between a home office setup and corporate networks without risking exposure during transit.</p>
+</div>
+<div class="use-case-card"><img alt="Centralized office USB security and access control" decoding="async" loading="lazy" src="https://i.ibb.co/qYsK6dYX/Centralized-Office-Security.jpg"/>
+<div class="use-case-icon">🏢</div>
+<h4>Enterprise IT Admins</h4>
+<p>Enforcing data leak prevention (DLP) by ensuring employees can only copy data to whitelisted, company-issued encrypted drives, blocking unauthorized foreign devices.</p>
+</div>
+<div class="use-case-card"><img alt="Shared PC security with protected removable storage" decoding="async" loading="lazy" src="https://i.ibb.co/Mxs0DnLD/Shared-PC-Security.jpg"/>
+<div class="use-case-icon">🛡</div>
+<h4>The Shared PC User</h4>
+<p>Accessing personal files safely on a public library computer, university lab, or hotel business center without leaving temporary decrypted files on the host hard drive.</p>
+</div>
+<div class="use-case-card"><img alt="Offline data protection vault for sensitive archives" decoding="async" loading="lazy" src="https://i.ibb.co/bMzYGK6K/Data-Protection-Vault.jpg"/>
+<div class="use-case-icon">🔒</div>
+<h4>Air-Gapped Archivers</h4>
+<p>Storing cryptocurrency recovery seeds, password database backups, or vital personal identity documents in a secure, offline physical vault.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="section-pad bg-tint" id="methods">
+<div class="container-reading">
+<h2>Complete Methods Guide</h2>
+<p>There are two primary approaches to creating a USB security key: relying on the operating system's built-in encryption, or using dedicated portable software. Here is how they compare.</p>
+<!-- Tab Group -->
+<div class="method-card-list"><div class="method-card expanded"><div class="method-card-head"><span class="method-label-badge">Method 1: Native Tools</span><h3>Using BitLocker To Go (Windows) <span class="diff-viz"><span class="diff-bar filled"></span><span class="diff-bar filled"></span><span class="diff-bar"></span><span class="diff-label">Moderate</span></span></h3></div><p>If you use a Professional or Enterprise edition of Windows, BitLocker To Go is built into your operating system. It applies AES encryption to the entire volume of the flash drive.</p><figure class="method-image content-image-card"><img alt="Windows BitLocker drive encryption settings for a USB drive" decoding="async" loading="lazy" src="https://i.ibb.co/5x1DxZg3/windows-11-encryption-efs-bitlocker-and-device-encryption.jpg"/></figure><div class="method-steps"><ul>
+<li><strong>How it works:</strong> Right-click your USB drive in File Explorer, select "Turn on BitLocker," and follow the prompts to set a password or use a smart card.</li>
+<li><strong>Best for:</strong> Users who work exclusively within the Windows ecosystem on company-managed devices.</li>
+<li><strong>Limitations:</strong> It is not cross-platform. A BitLocker drive cannot be easily opened on a Mac or Linux machine. Furthermore, it requires administrative privileges on the host PC to unlock, meaning you cannot access your files on most public or restricted corporate computers.</li>
+</ul></div></div><div class="method-card"><div class="method-card-head"><span class="method-label-badge">Method 2: Software Key</span><h3>Using Portable Security Software <span class="diff-viz"><span class="diff-bar filled"></span><span class="diff-bar"></span><span class="diff-bar"></span><span class="diff-label">Easy</span></span></h3></div><p>Instead of relying on the host OS, you can install a portable encryption application directly onto the USB drive itself. The software acts as the gatekeeper, living on the pendrive.</p><figure class="method-image content-image-card"><img alt="USB Secure password dialog for locking a flash drive" decoding="async" loading="lazy" src="https://i.ibb.co/NnprhyFP/usb-secure-password-dialog-screenshot.jpg"/></figure><div class="method-steps"><ul>
+<li><strong>How it works:</strong> You run a lightweight installer that places a secure executable on the drive. When plugged into any computer, the app prompts for a password to mount a virtual secure environment.</li>
+<li><strong>Best for:</strong> Users who need cross-platform access, plug-and-play convenience, and the ability to unlock files on PCs where they do not have administrator rights.</li>
+<li><strong>Limitations:</strong> Requires purchasing a third-party license for full features (though free trials exist). </li>
+</ul></div></div></div>
+</div>
+</section>
+<!-- SAAS MOMENT -->
+<section class="saas-band" id="recommendation">
+<div class="container-wide saas-grid">
+<div class="saas-content">
+<span style="font-family: var(--font-heading); color: var(--color-primary-accent); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; display: block; margin-bottom: 16px;">Editorial Top Pick</span>
+<h2>Why We Recommend USB Secure</h2>
+<p>Of all the methods we tested, native OS tools often fail in real-world travel scenarios because they demand administrator rights to decrypt. If you plug a BitLocker drive into a hotel PC, you simply cannot open it.</p>
+<p>We recommend <strong>USB Secure</strong> (developed by <a href="https://newsoftwares.net/" rel="noopener noreferrer" target="_blank">NewSoftwares.net</a>) for most users because it solves the portability problem. It installs directly onto the flash drive. It requires <strong>zero administrator rights</strong> on the host machine. You can plug it into any PC, enter your password, and access your files via a secure Virtual Drive—meaning your unencrypted data never touches the host PC's temporary folders.</p>
+<div class="saas-ctas">
+<a class="btn-primary" href="https://usb-secure.br.download.it/download" rel="noopener noreferrer" target="_blank">Try USB Secure Free →</a>
+<a class="btn-outline" href="https://store.newsoftwares.net/" rel="noopener noreferrer" target="_blank">View Full Version →</a>
+</div>
+</div>
+<div class="mockup-frame">
+<div class="mockup-inner"><div class="image-grid"><figure class="inline-asset"><img alt="USB Secure product box and application screenshot" decoding="async" loading="lazy" src="https://i.ibb.co/dJX03kDG/usb-secure-product-box-screenshot.jpg"/></figure><figure class="inline-asset"><img alt="USB Secure boxshot for portable drive protection software" decoding="async" loading="lazy" src="https://i.ibb.co/tPkzhLr6/usb-secure-boxshot-high-res.png"/></figure></div><div>[ SECURE VIRTUAL DRIVE INTERFACE ]</div></div>
+<div style="display: flex; gap: 8px; margin-top: 16px; justify-content: center;">
+<span style="background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-size: 13px; color: white;">AES-256 Encryption</span>
+<span style="background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-size: 13px; color: white;">Zero Admin Rights</span>
+</div>
+</div>
+</div>
+</section>
+<section class="section-pad" id="comparison">
+<div class="container-wide">
+<h2>Methods Comparison: Native vs Software</h2>
+<p class="container-reading" style="margin-left:0; padding-left:0;">A head-to-head look at how different approaches to creating a USB security key handle critical real-world requirements.</p><figure class="content-image-card image-wide"><img alt="USB Secure software review visual for comparing USB protection methods" decoding="async" loading="lazy" src="https://i.ibb.co/9ktkWkDd/usb-secure-software-review.jpg"/></figure>
+<div class="comp-table-wrap">
+<table>
+<thead>
+<tr>
+<th>Security Feature</th>
+<th>BitLocker To Go (Windows)</th>
+<th>Mac Disk Utility</th>
+<th class="col-highlight">USB Secure (Software)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Works without Admin Rights</td>
+<td><span class="dot"></span> No (Requires Admin)</td>
+<td><span class="dot"></span> No (Requires Admin)</td>
+<td class="col-highlight"><span class="dot fill-full"></span> Yes (Portable)</td>
+</tr>
+<tr>
+<td>Cross-Platform (Win/Mac)</td>
+<td><span class="dot"></span> No</td>
+<td><span class="dot"></span> No</td>
+<td class="col-highlight"><span class="dot fill-full"></span> Yes</td>
+</tr>
+<tr>
+<td>Virtual Drive Access</td>
+<td><span class="dot"></span> No</td>
+<td><span class="dot"></span> No</td>
+<td class="col-highlight"><span class="dot fill-full"></span> Yes</td>
+</tr>
+<tr>
+<td>Data Leak Prevention (Endpoint)</td>
+<td><span class="dot fill-half"></span> Partial (GPO based)</td>
+<td><span class="dot"></span> No</td>
+<td class="col-highlight"><span class="dot fill-full"></span> Yes (via companion tool)</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td><span class="dot fill-full"></span> Free (Built-in)</td>
+<td><span class="dot fill-full"></span> Free (Built-in)</td>
+<td class="col-highlight"><span class="dot fill-half"></span> Paid (Free Trial)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section class="section-pad bg-tint" id="tutorial">
+<div class="container-reading">
+<h2>How to <a href="https://techleez.co.uk/why-you-should-password-protect-your-usb-drive/" rel="noopener noreferrer" target="_blank">Password Protect a USB Drive</a> (Step-by-Step)</h2>
+<p>Here is how to set up a software-based USB security key using our recommended tool, USB Secure.</p><figure class="content-image-card image-wide"><img alt="USB flash drive plugged into a laptop before password protection setup" decoding="async" loading="lazy" src="https://i.ibb.co/twHL35yP/USB-drive-successful-plugged.jpg"/></figure>
+<div itemscope="" itemtype="http://schema.org/HowTo">
+<meta content="How to Create a USB Security Key with USB Secure" itemprop="name">
+<div itemprop="step" itemscope="" itemtype="http://schema.org/HowToStep" style="background: white; padding: 24px; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 16px;">
+<h3 itemprop="name" style="margin-top:0;">Step 1: Download and Run the Installer</h3>
+<p itemprop="text">Plug your standard flash drive into your PC. Download the USB Secure installer from the official site. Launch the setup file and accept the End-User Agreement.</p>
+</div>
+<div itemprop="step" itemscope="" itemtype="http://schema.org/HowToStep" style="background: white; padding: 24px; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 16px;">
+<h3 itemprop="name" style="margin-top:0;">Step 2: Select the Target Drive</h3>
+<p itemprop="text">The software will automatically detect all connected removable media. Select your specific USB drive letter from the dropdown list and click "Install" to place the portable security application directly onto the drive.</p>
+<figure class="content-image-card image-wide"><img alt="USB Secure app screen showing protected drive setup" decoding="async" loading="lazy" src="https://i.ibb.co/1Y7Z4tmV/usb-secure-screen-1.png"/></figure></div>
+<div itemprop="step" itemscope="" itemtype="http://schema.org/HowToStep" style="background: white; padding: 24px; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 16px;">
+<h3 itemprop="name" style="margin-top:0;">Step 3: Define the Master Password</h3>
+<p itemprop="text">Immediately following installation, the app will prompt you to set a master password. This password acts as the cryptographic key. Choose a strong, memorable passphrase. Click OK to finalize.</p>
+</div>
+<div itemprop="step" itemscope="" itemtype="http://schema.org/HowToStep" style="background: white; padding: 24px; border-radius: 8px; border: 1px solid var(--color-border); margin-bottom: 16px;">
+<h3 itemprop="name" style="margin-top:0;">Step 4: Lock Your Files</h3>
+<p itemprop="text">Move your sensitive files (PDFs, Excel sheets, videos) onto the drive using standard Windows Explorer. Then, open the USB Secure app from the root of the drive and click the green "Lock USB Drive" button. Your files will vanish from standard Explorer views, now securely encrypted.</p>
+</div>
+</meta></div>
+<div style="margin-top: 32px; text-align: center;">
+<a class="btn-editorial" href="https://usb-secure.br.download.it/download" rel="noopener noreferrer" target="_blank">Download Free Trial →</a>
+</div>
+</div>
+</section>
+<section class="section-pad" id="deep-dive">
+<div class="container-reading">
+<h2>Technical Deep Dive &amp; Advanced Security</h2>
+<div class="signature-toggle-wrap">
+<div class="sig-toggle">
+<div class="sig-slider" id="sig-slider"></div>
+<button class="sig-btn active" onclick="toggleSig('fido')">FIDO2 &amp; WebAuthn</button>
+<button class="sig-btn" onclick="toggleSig('endpoint')">Endpoint Policies</button>
+</div>
+</div>
+<div class="sig-view active" id="view-fido">
+<h3>Is a USB Security Key the same as a FIDO2 Key?</h3><figure class="content-image-card image-wide"><img alt="Hardware USB security key used for account authentication" decoding="async" loading="lazy" src="https://i.ibb.co/Tq26xj92/usb-security-key-for-bank-of-america.jpg"/></figure>
+<p>It is important to clarify terminology. In this guide, we focused on creating an <strong>encrypted storage key</strong>—a drive that safely holds data. </p>
+<p>Conversely, a <strong><a href="https://uk.pcmag.com/guide/78973/the-ultimate-usb-key" rel="noopener noreferrer" target="_blank">FIDO2 / U2F Security Key</a></strong> (like a YubiKey or a Feitian ePass FIDO2 USB-C) is a specialized hardware token used strictly for Two-Factor Authentication (2FA) to log into accounts (like Google, Microsoft, or Bank of America). </p>
+<p>You <em>cannot</em> turn a standard USB flash drive into a true FIDO2 authentication key via software, because FIDO2 relies on an un-exportable hardware cryptographic chip built into the device at the factory to sign cryptographic challenges. A standard flash drive lacks this hardware. </p>
+<p>If you need to <strong>set up a USB security key for a Google Account</strong>, you must purchase a dedicated FIDO2 key, go to your Google Account Security settings, select "2-Step Verification," choose "Security Key," and insert the hardware token to register it.</p>
+</div>
+<div class="sig-view" id="view-endpoint">
+<h3>Enterprise Endpoint Policies: Blocking Untrusted Keys</h3><figure class="content-image-card image-wide"><img alt="Blocked USB port concept for endpoint data leak prevention" decoding="async" loading="lazy" src="https://i.ibb.co/5XXFPSP1/The-Blocked-Port.jpg"/></figure>
+<p>For organizations, creating encrypted drives is only half the battle. The other half is ensuring that unauthorized, unencrypted drives cannot be used to siphon data out of the network.</p>
+<p>While USB Secure protects the data <em>on</em> the drive, companion software like <strong><a href="https://www.1888pressrelease.com/usb-block-1-7-0-prevent-data-leaks-by-restricting-usb-driv-pr-611593.html" rel="noopener noreferrer" target="_blank">USB Block</a></strong> (also by NewSoftwares.net) is installed on the host PC to act as an endpoint sentinel. USB Block prevents data leaks by restricting access to unauthorized USB drives, external devices, and network ports. </p>
+<p>Administrators can whitelist authorized, encrypted portable drives. If an employee inserts an unauthorized drive, the system prompts for an administrative password, actively logging the incorrect attempt and preventing the data transfer. This two-pronged approach (encrypted keys + endpoint blocking) forms a robust data leak prevention strategy.</p>
+</div>
+</div>
+</section>
+<section class="section-pad bg-tint" id="troubleshooting">
+<div class="container-reading">
+<h2>Troubleshooting Common USB Security Issues</h2>
+<div class="interactive-box">
+<span class="interactive-label">Safe Usage Checklist</span>
+<h3 style="margin-top:0;">Before using an encrypted drive on a public PC</h3>
+<div class="check-item"><input onclick="this.parentElement.classList.toggle('checked')" type="checkbox"/> <span>Ensure the host PC has active, updated antivirus software.</span></div>
+<div class="check-item"><input onclick="this.parentElement.classList.toggle('checked')" type="checkbox"/> <span>Do not extract files to the local Desktop; view them via the Virtual Drive feature.</span></div>
+<div class="check-item"><input onclick="this.parentElement.classList.toggle('checked')" type="checkbox"/> <span>Log out and click "Lock" in the security app before pulling the drive.</span></div>
+<div class="check-item"><input onclick="this.parentElement.classList.toggle('checked')" type="checkbox"/> <span>Never use a random USB drive you found in public (The <a href="https://security.stackexchange.com/questions/118854/attacks-via-physical-access-to-usb-dma" rel="noopener noreferrer" target="_blank">BadUSB</a> Threat).</span></div>
+</div><figure class="content-image-card image-wide"><img alt="USB drive virus and malware prevention visual for safe removable media use" decoding="async" loading="lazy" src="https://i.ibb.co/23wDmkss/usb-drive-virus-and-malware-detection-and-prevention.jpg"/></figure>
+<h3 style="margin-top: 40px;">How to recover access if you forgot the password?</h3>
+<p>If you are using robust encryption like USB Secure or BitLocker, there are no simple backdoors—this is by design to thwart hackers. If you lose your password:</p>
+<ul>
+<li><strong>BitLocker:</strong> Check your Microsoft Account online, as recovery keys are often backed up there during initial setup.</li>
+<li><strong>USB Secure:</strong> If you enabled the "Master Key" feature during setup, you can use it to regain access. Otherwise, the AES encryption cannot be bypassed without the key, meaning the data is permanently inaccessible.</li>
+</ul>
+</div>
+</section>
+<section class="section-pad">
+<div class="container-reading">
+<div class="pull-quote">
+                "We needed a way to let our remote accountants access sensitive tax files without requiring them to have admin rights on their home laptops. Turning standard drives into encrypted tokens with portable software solved our compliance issues instantly."
+                <strong>— IT Director, Regional Accounting Firm</strong>
+</div>
+</div>
+</section>
+<section class="section-pad bg-tint" id="pricing">
+<div class="container-reading">
+<h2>Software Pricing &amp; Versions</h2>
+<div class="pricing-prose">
+<div style="flex:1;">
+<h4>USB Secure Pricing: What You Get</h4>
+<p>NewSoftwares offers USB Secure as a one-time purchase, avoiding the fatigue of annual SaaS subscriptions. You can start with a <a href="https://nl.afterdawn.com/downloads/beveiliging/encryptie/usb-secure.cfm" rel="noopener noreferrer" target="_blank">free evaluation version</a> to test compatibility with your specific brand of pendrive.</p>
+<p>The full version removes trial limitations, eliminates trial reminders, and unlocks full virtual drive access for an unlimited amount of data on the targeted drive.</p>
+</div>
+<div style="flex:1; background: var(--color-hero-bg); padding: 24px; border-radius: 8px; text-align: center;">
+<span class="pricing-price">One-Time License</span>
+<a class="btn-primary" href="https://store.newsoftwares.net/" rel="noopener noreferrer" style="width: 100%; margin-bottom: 12px;" target="_blank">Get Full Version →</a>
+<a class="btn-editorial" href="https://usb-secure.br.download.it/download" rel="noopener noreferrer" style="width: 100%; border:none; background:transparent;" target="_blank">Download Free Trial</a>
+<figure class="content-image-card resource-image"><img alt="Security shield protecting data for USB security software pricing section" decoding="async" loading="lazy" src="https://i.ibb.co/bjywWFhL/security-shield-protecting.jpg"/></figure></div>
+</div>
+</div>
+</section>
+<section class="section-pad" id="faq">
+<div class="container-reading">
+<h2>Frequently Asked Questions</h2>
+<div class="faq-chat">
+<div class="faq-q">Can any USB drive be turned into a security key?</div>
+<div class="faq-a">Yes. Any standard, functioning USB flash drive formatted to FAT32, NTFS, or exFAT can be transformed into an encrypted data vault using software like USB Secure.</div>
+</div>
+<div class="faq-chat">
+<div class="faq-q">Can a virus spread through a password-protected USB drive?</div>
+<div class="faq-a">If the drive is locked, the encrypted files cannot execute malicious code. However, if you unlock the drive on an infected host PC, a virus on that PC could infect the newly decrypted files. This is why the "Virtual Drive" read-only access method is highly recommended for untrusted computers.</div>
+</div>
+<div class="faq-chat">
+<div class="faq-q">What is BadUSB and how do I protect against it?</div>
+<div class="faq-a">BadUSB is a critical vulnerability where a USB device's firmware is rewritten to act as a human interface device (like a keyboard), injecting malicious commands as soon as it is plugged in. Software encryption does not prevent BadUSB, as the attack happens at the firmware level before software executes. Never plug unknown, found USB drives into your computer.</div>
+</div>
+<div class="faq-chat">
+<div class="faq-q">How to securely erase all data from a USB drive?</div>
+<div class="faq-a">Simply deleting files or doing a quick format is not enough; forensic tools can recover the data. You must perform a "secure wipe" or "zero-fill" operation. Most OS disk utilities offer a "secure erase" option that overwrites the entire drive with random data multiple times.</div>
+</div>
+<div class="faq-chat">
+<div class="faq-q">Can I use a regular USB as a security key for Windows 11 Hello?</div>
+<div class="faq-a">No. Windows Hello requires a dedicated FIDO2/WebAuthn hardware token (with a built-in cryptographic chip) for physical authentication. You cannot use a standard software-encrypted pendrive to log into your Windows user profile.</div>
+</div>
+</div>
+</section>
+<section class="section-pad bg-tint" id="final-verdict">
+<div class="container-reading" style="text-align: center;"><figure class="content-image-card image-wide"><img alt="USB Secure product screenshot for final USB security recommendation" decoding="async" loading="lazy" src="https://i.ibb.co/dJX03kDG/usb-secure-product-box-screenshot.jpg"/></figure>
+<span class="interactive-label">Our Verdict</span>
+<h2 style="margin-top:0;">The Bottom Line on USB Security</h2>
+<p style="max-width: 600px; margin: 0 auto 32px; font-size: 18px;">While hardware-encrypted drives and native OS tools have their place, relying on portable encryption software is the most flexible way to protect your data across different operating systems and restricted public computers. It turns the cheap flash drives you already own into powerful, zero-admin-rights secure vaults.</p>
+<div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+<a class="btn-editorial" href="https://usb-secure.br.download.it/download" rel="noopener noreferrer" target="_blank">Try USB Secure Free →</a>
+<a class="btn-editorial" href="https://store.newsoftwares.net/" rel="noopener noreferrer" style="background: white;" target="_blank">Get the Full Version →</a>
+</div>
+</div>
+</section>
+<footer>
+<div class="container-wide">
+<div class="footer-grid">
+<div class="footer-col">
+<div class="footer-brand"><span aria-hidden="true" class="brand-mark"></span><span>SecureDrive Hub</span></div>
+<p style="color: #a095a0;">The independent editorial guide to hardware and portable data security.</p>
+</div>
+<div class="footer-col">
+<h4>Guides</h4>
+<ul>
+<li><a href="#methods">BitLocker Alternatives</a></li>
+<li><a href="#deep-dive">FIDO2 vs Storage Keys</a></li>
+<li><a href="#faq">BadUSB Protection</a></li>
+</ul>
+</div>
+<div class="footer-col">
+<h4>Resources</h4>
+<ul>
+<li><a href="#recommendation">Software Reviews</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="https://www.newsoftwares.net" rel="noopener noreferrer" target="_blank">NewSoftwares.net</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<p class="editorial-disclosure">This site operates as an independent editorial resource. Some links may earn a referral commission at no cost to you. Product recommendations reflect editorial judgment and independent assessment. USB Secure and USB Block are developed by <a href="https://www.newsoftwares.net" rel="noopener noreferrer" target="_blank">NewSoftwares.net</a>.</p>
+<p>© 2026 SecureDrive Hub</p>
+</div>
+</div>
+</footer>
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Can any USB drive be turned into a security key?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. Any standard, functioning USB flash drive formatted to FAT32, NTFS, or exFAT can be transformed into an encrypted data vault using software like USB Secure."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Can a virus spread through a password-protected USB drive?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "If the drive is locked, the encrypted files cannot execute malicious code. However, if you unlock the drive on an infected host PC, a virus could infect the newly decrypted files."
+        }
+      }, {
+        "@type": "Question",
+        "name": "What is BadUSB and how do I protect against it?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "BadUSB is a vulnerability where a USB device's firmware is rewritten to act as a human interface device, injecting malicious commands. Software encryption does not prevent this. Never plug unknown, found USB drives into your computer."
+        }
+      }]
+    }
+    </script>
+<script defer="">
+
+document.addEventListener('DOMContentLoaded', () => {
+    const header = document.getElementById('site-header');
+    const progress = document.getElementById('reading-progress');
+    const mobileCurrent = document.getElementById('mobile-current-section');
+    const navLinks = document.getElementById('nav-links');
+    const mobileToggle = document.getElementById('mobile-toggle');
+
+    const updateProgress = () => {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+        if (progress) progress.style.width = pct + '%';
+        if (header) header.classList.toggle('scrolled', scrollTop > 10);
+    };
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    if (mobileToggle && navLinks) {
+        mobileToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const target = document.querySelector(this.getAttribute('href'));
+            if (!target) return;
+            e.preventDefault();
+            if (navLinks) navLinks.classList.remove('active');
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    // Sticky Table of Contents current-section highlighting
+    const sidebarLinks = Array.from(document.querySelectorAll('.toc-sidebar a'));
+    const sections = sidebarLinks
+        .map(link => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean);
+
+    const setActiveToc = (id) => {
+        sidebarLinks.forEach(link => {
+            const active = link.getAttribute('href') === '#' + id;
+            link.classList.toggle('active', active);
+            if (active && mobileCurrent) {
+                mobileCurrent.textContent = link.textContent.replace(/^\d+\.\s*/, '');
+            }
+        });
+    };
+
+    if ('IntersectionObserver' in window && sections.length) {
+        const observer = new IntersectionObserver((entries) => {
+            const visible = entries
+                .filter(entry => entry.isIntersecting)
+                .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+            if (visible) setActiveToc(visible.target.id);
+        }, { rootMargin: '-28% 0px -58% 0px', threshold: [0.08, 0.18, 0.32] });
+        sections.forEach(section => observer.observe(section));
+        setActiveToc(sections[0].id);
+    }
+
+    // Method cards expand/collapse
+    document.querySelectorAll('.method-card').forEach(card => {
+        card.addEventListener('click', (event) => {
+            if (event.target.closest('a')) return;
+            card.classList.toggle('expanded');
+        });
+    });
+
+    window.openTab = function(tabId, evt) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        const panel = document.getElementById(tabId);
+        if (panel) panel.classList.add('active');
+        const button = evt?.currentTarget || window.event?.currentTarget;
+        if (button) button.classList.add('active');
+    };
+
+    window.toggleSig = function(viewId, evt) {
+        const slider = document.getElementById('sig-slider');
+        const btns = document.querySelectorAll('.sig-btn');
+        const views = document.querySelectorAll('.sig-view');
+        btns.forEach(b => b.classList.remove('active'));
+        views.forEach(v => v.classList.remove('active'));
+        const button = evt?.currentTarget || window.event?.currentTarget;
+        if (button) button.classList.add('active');
+        const view = document.getElementById('view-' + viewId);
+        if (view) view.classList.add('active');
+        if (slider) slider.style.transform = viewId === 'fido' ? 'translateX(0)' : 'translateX(100%)';
+    };
+
+    document.querySelectorAll('.sig-btn').forEach(btn => {
+        btn.addEventListener('click', (evt) => {
+            const viewId = btn.textContent.includes('Endpoint') ? 'endpoint' : 'fido';
+            window.toggleSig(viewId, evt);
+        });
+        btn.removeAttribute('onclick');
+    });
+
+    const quizRadios = document.querySelectorAll('input[name="risk"]');
+    const resultBox = document.getElementById('quiz-result');
+    quizRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const val = e.target.value;
+            if (!resultBox) return;
+            resultBox.style.display = 'block';
+            if (val === 'high') {
+                resultBox.innerHTML = '<strong>High Risk:</strong> You are actively storing unencrypted sensitive data. You need a dedicated software security key immediately to prevent data leakage.';
+                resultBox.style.borderLeftColor = '#8B5E3C';
+            } else if (val === 'med') {
+                resultBox.innerHTML = '<strong>Moderate Risk:</strong> Moving files poses a transit risk. Applying a portable password lock ensures that if the drive is dropped, your company data is safe.';
+                resultBox.style.borderLeftColor = 'var(--color-primary-accent)';
+            } else {
+                resultBox.innerHTML = '<strong>Low Risk:</strong> If no personal data is stored, encryption is less urgent. However, a secure drive prevents unauthorized parties from writing malware to your drive.';
+                resultBox.style.borderLeftColor = 'var(--color-secondary-accent)';
+            }
+        });
+    });
+});
+
+</script>
+</body>
+</html>
