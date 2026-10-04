@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://stevefrankns.github.io/Create-and-Set-Up-a-USB-Security-Key-on-Windows-and-Mac/sitemap.xml
